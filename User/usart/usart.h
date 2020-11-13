@@ -16,6 +16,7 @@ typedef struct{
 typedef enum{
 	KEY_ALARM = 0x01,
 	VOICE_ALARM = 0x02,
+	SYS_REBOOT = 0x03,
 }STM32_DATA_TYPE;
 
 typedef enum{

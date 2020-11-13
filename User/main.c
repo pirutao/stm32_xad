@@ -2,7 +2,36 @@
 #include "usart.h"
 #include "LD3320.h"
 #include <string.h>
+#include "tim_driver.h"
+#include "stm32f10x_wwdg.h"
 
+uint32_t timCounter = 0;
+
+static void sys_delay(unsigned long uldata)
+{
+	unsigned int i  =  0;
+	unsigned int j  =  0;
+	unsigned int k  =  0;
+	for (i=0;i<5;i++)
+	{
+		for (j=0;j<uldata;j++)
+		{
+			k = 200;
+			while(k--);
+		}
+	}
+}
+void mcuRestart(void)
+{
+//	char buff[4] = {0xeb,0xeb,0x90,SYS_REBOOT};
+	gvr.uart1_tx.head1 = 0xeb;
+	gvr.uart1_tx.head2 = 0x90;
+	gvr.uart1_tx.type = SYS_REBOOT;
+	USART_SendBuf((char *)&gvr.uart1_tx,3);
+	sys_delay(1000);
+  __set_FAULTMASK(1); //
+  NVIC_SystemReset(); //
+}
 /******************************************************************************/
 static void key_alarm_gpio_config(void)
 {
@@ -155,6 +184,8 @@ int main(void)
 	USART_init();
 	key_alarm_gpio_config();
 	LD3320_init();
+	tim2_init();
+	tim2_NVIC_init();
 	//printf("\r\n 开始运行LD3320测试程序 \r\n");	
 	//LD3320_main();				//LD3320执行函数
 	for(;;)
@@ -167,6 +198,12 @@ int main(void)
 		audio_key_recv_loop();
 		key_alarm_loop();
 		LD3320_loop();
+		
+		if(timCounter > (24 * 3600))
+		{
+			timCounter = 0;
+			mcuRestart();
+		}
 	}
 }
 /*********************************************END OF FILE**********************/

@@ -28,6 +28,11 @@
 #include <stdio.h>
 #include <usart.h>
 #include "LD3320.h"
+#include "tim_driver.h"
+
+
+extern uint32_t timCounter;
+
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
   */
@@ -216,6 +221,17 @@ void EXTI15_10_IRQHandler(void)
 		EXTI_ClearFlag(LD3320IRQEXITLINE);
 		EXTI_ClearITPendingBit(LD3320IRQEXITLINE);//清除LINE上的中断标志位  
 	} 
+}
+
+void TIM2_IRQHandler(void)
+{
+ 
+	if(TIM_GetITStatus(TIM2, TIM_IT_Update) == SET)
+	{
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+		timCounter++;
+		//uart1_putc('A');
+	}
 }
 /**
   * @brief  This function handles PPP interrupt request.

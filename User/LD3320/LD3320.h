@@ -32,7 +32,7 @@
 #define LD_PLL_ASR_1B 		0x48
 #define LD_PLL_ASR_1D 		0x1f
 
-#define MIC_VOL 0x43
+#define MIC_VOL 0x55
 extern uint8 nAsrStatus;
 ///用户修改函数
 void  LD3320_loop(void);
